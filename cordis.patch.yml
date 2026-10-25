@@ -1,0 +1,8 @@
+- insert:
+    - id: dsh-superpowers
+      name: dsh-superpowers-plugin
+      config:
+        skills: true
+        bootstrap: true
+        toolMapping: true
+        order: 50

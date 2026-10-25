@@ -1,0 +1,42 @@
+{
+  "name": "dsh-superpowers-plugin",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness native bundle for the Superpowers skill collection",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/**/*.js",
+    "skills/**",
+    "scripts/**/*.mjs",
+    "cordis.patch.yml",
+    "upstream-lock.json",
+    "README.md",
+    "LICENSE",
+    "LICENSE.superpowers"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "verify:upstream": "node scripts/verify-upstream.mjs",
+    "sync:upstream": "node scripts/sync-upstream.mjs"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "superpowers",
+    "skills"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
