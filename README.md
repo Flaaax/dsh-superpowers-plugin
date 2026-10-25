@@ -31,7 +31,7 @@ dsh plugin --profile desktop add "<npm-package-name>@<version>"
 ## 验证
 
 ```powershell
-dsh plugin --profile desktop why dsh-superpowers-plugin
+dsh plugin --profile desktop list --depth 0
 npm test
 npm run verify:upstream
 npm pack --dry-run
@@ -99,7 +99,7 @@ dsh plugin --profile desktop remove dsh-superpowers-plugin
 
 ## 故障排查
 
-- 技能未出现：确认安装命令的 profile 是 `desktop`，运行 `dsh plugin --profile desktop why dsh-superpowers-plugin`，然后完整重启桌面应用。
+- 技能未出现：确认安装命令的 profile 是 `desktop`，运行 `dsh plugin --profile desktop list --depth 0`，然后完整重启桌面应用。
 - bootstrap 不生效：检查 profile overlay 是否把 `bootstrap` 设成了 `false`，并新建会话测试。
 - 同名技能行为不同：插件 provider 使用 rank `550`，且 desktop 的 scoped 本地 provider 会覆盖全局同名项；项目或用户技能可能有意遮蔽 vendored 版本。
 - provider 警告：运行 `npm test` 和 `npm run verify:upstream`；缺失、非法 frontmatter 和重复技能名都会产生带路径的诊断。
