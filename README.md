@@ -1,49 +1,84 @@
 # DSH Superpowers Plugin
 
-这是一个轻量的 DeepSeek Harness（DSH）原生 Cordis bundle：安装到 `desktop` profile 后，它会把固定版本的 [obra/superpowers](https://github.com/obra/superpowers) 注册到 DSH 原生技能目录，并在每个会话的 system prompt 中自动注入 `using-superpowers` bootstrap。
+[简体中文](./README.zh-CN.md)
 
-- 默认 profile：`desktop`
-- 已验证 DSH：`0.2.1-rc.3`
-- Superpowers：`v7.0.1`，commit `2ce8aa15d05bd57213e6f746f953aafb7ded7a8b`
-- 其余技能按需通过原生 `skill` 工具加载；不会把所有技能正文塞进每轮上下文
-- 无 OpenCode 依赖、无 `postinstall`、运行时仅使用 Node.js 内置模块
+A lightweight native [DeepSeek Harness](https://github.com/deepseek-ai/DeepSeek-Harness) Cordis bundle that brings the pinned [obra/superpowers](https://github.com/obra/superpowers) skill collection to DSH.
 
-## 安装
+- Default target: the DSH `desktop` profile
+- Tested with DSH `0.2.1-rc.3`
+- Vendored Superpowers `v7.0.1` at commit `2ce8aa15d05bd57213e6f746f953aafb7ded7a8b`
+- Native lazy-loaded `ctx.skills` provider
+- Automatic `using-superpowers` bootstrap through `ctx.systemPrompt`
+- DSH-specific tool mapping with bare skill names such as `skill("brainstorming")`
+- No OpenCode dependency, install hook, build step, or runtime dependency
 
-安装本地目录（当前仓库已实际验证的形式）：
+Only the bootstrap is injected into every model request. All other skills are loaded on demand through DSH's native `skill` tool.
+
+## Install
+
+Install the pinned GitHub release into the desktop profile:
+
+```powershell
+dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.1.0"
+```
+
+Fully quit and restart the DeepSeek Harness desktop application, then start a new conversation.
+
+Confirm the installed dependency:
+
+```powershell
+dsh plugin --profile desktop list --depth 0
+```
+
+For local development:
 
 ```powershell
 dsh plugin --profile desktop add "E:\Projects\JavaScript\dsh-superpowers-plugin"
 ```
 
-安装后重启 DeepSeek Harness 桌面应用。安装命令不会主动关闭正在运行的桌面应用。
+The project is not currently published to npm. If an npm package is published in the future, pin its exact version just like the Git tag.
 
-以下是未来发布渠道的命令形式；本仓库当前没有声称已发布 GitHub 仓库或 npm 包：
+## Manual smoke test
 
-```powershell
-# GitHub 仓库发布后，固定到明确 tag
-dsh plugin --profile desktop add "github:<owner>/<repo>#<tag>"
+After restarting the desktop app, open a new conversation and try:
 
-# npm 包发布后，固定到明确版本
-dsh plugin --profile desktop add "<npm-package-name>@<version>"
+```text
+Let's make a React todo list. Do not create or edit any files yet. Follow the applicable Superpowers workflow and briefly state the first design question.
 ```
 
-## 验证
+The first relevant tool call should be the bare name `skill("brainstorming")`, before any file write. It must not call `skill("superpowers:brainstorming")`.
 
-```powershell
-dsh plugin --profile desktop list --depth 0
-npm test
-npm run verify:upstream
-npm pack --dry-run
+For debugging:
+
+```text
+A test is failing: expected 42 but received undefined. Do not edit files. Follow the applicable Superpowers workflow and briefly state the first diagnostic step.
 ```
 
-在桌面应用中新建会话后，可以先问“你有哪些 Superpowers？”；面对“设计一个新功能”时，模型应先调用裸技能名 `skill("brainstorming")`，而不是 `skill("superpowers:brainstorming")`。调试任务应先加载 `systematic-debugging`。
+The model should load `systematic-debugging`.
 
-bundle row 的稳定 id 是 `dsh-superpowers`。可在桌面应用的插件页确认该插件已启用；对于允许 CLI dump 的非桌面 profile，也可用 `dsh --profile <name> --dump-config` 搜索这个 id。当前 DSH 将真实 `desktop` profile 交由 Electron 独占管理，因此 CLI 对它执行 `--dump-config` 会明确拒绝；这不代表插件未安装。
+## Update
 
-## 配置
+Install the new explicit tag, then restart the desktop app:
 
-默认配置如下：
+```powershell
+dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.1.1"
+```
+
+Do not install an unpinned `main` branch if reproducible behavior matters.
+
+## Uninstall
+
+One command removes only this plugin:
+
+```powershell
+dsh plugin --profile desktop remove dsh-superpowers-plugin
+```
+
+Restart the desktop app afterward. Other plugins and user skills are not changed.
+
+## Configuration
+
+Defaults:
 
 ```yaml
 - id: dsh-superpowers
@@ -54,14 +89,12 @@ bundle row 的稳定 id 是 `dsh-superpowers`。可在桌面应用的插件页�
     order: 50
 ```
 
-配置项：
+- `skills`: register the vendored skill catalog.
+- `bootstrap`: inject `using-superpowers` automatically. Set it to `false` to keep only the catalog.
+- `toolMapping`: append the native DSH tool translation.
+- `order`: system-prompt section order. The default `50` is after the current persona slot (`0`) and before tool guidance (`1000+`).
 
-- `skills`：注册随包技能目录；关闭后不再提供这些技能。
-- `bootstrap`：自动注入 `using-superpowers`；设为 `false` 可只保留技能目录。
-- `toolMapping`：在 bootstrap 后附加 DSH 工具映射。
-- `order`：system prompt section 顺序。DSH `0.2.1-rc.3` 的 persona 是 `0`，工具指导从 `1000` 开始，默认 `50` 位于二者之间。
-
-如需覆盖配置，在目标 profile 自己的 `cordis.patch.yml` 中添加对应 row patch；无需改本插件或 DSH 内置文件。例如只保留技能目录：
+Override the stable row `dsh-superpowers` in the target profile's own `cordis.patch.yml`. For example, to retain the skills without the bootstrap:
 
 ```yaml
 - id: dsh-superpowers
@@ -69,52 +102,26 @@ bundle row 的稳定 id 是 `dsh-superpowers`。可在桌面应用的插件页�
     bootstrap: false
 ```
 
-改完后重启桌面应用。不要在同一 profile 重复安装多个本插件副本。
-
-## 更新
-
-本地开发目录更新后，重新执行同一条安装命令，再重启桌面应用：
+## Verification
 
 ```powershell
-dsh plugin --profile desktop add "E:\Projects\JavaScript\dsh-superpowers-plugin"
+npm test
+npm run verify:upstream
+npm pack --dry-run
 ```
 
-维护者同步上游时必须显式指定稳定 tag 或完整 commit；脚本拒绝 `main`、`dev` 等浮动分支：
+The test suite covers manifest and patch validation, provider registration, every vendored skill, frontmatter parsing, lazy loading, cancellation, bootstrap configuration, package contents, an actual unpacked tarball import, and the upstream lock.
+
+## Upstream maintenance
+
+The sync command requires an explicit stable tag or full commit SHA and rejects floating branches:
 
 ```powershell
 npm run sync:upstream -- --ref v7.0.1
 ```
 
-同步脚本先在临时目录检出上游，更新 skills、上游许可证和 `upstream-lock.json`，再执行校验和完整测试。失败会恢复原 payload。它会报告新增、删除和变化的文件；普通安装不会运行该脚本。
+It stages the new payload in a temporary directory, updates the upstream license and lock, reports added/removed/changed files, runs verification and the complete test suite, and restores the previous payload if validation fails. It is never run during user installation.
 
-`upstream-lock.json` 记录仓库、tag/ref、完整 SHA、同步时间以及每个 vendored 文件的 SHA-256。当前没有修改任何上游 skill，`allowedDifferences` 为空。
+## License
 
-## 一键卸载
-
-```powershell
-dsh plugin --profile desktop remove dsh-superpowers-plugin
-```
-
-重启桌面应用即可。该命令只移除本插件，不会删除或升级其他插件，也不会改用户的技能和个人配置。
-
-## 故障排查
-
-- 技能未出现：确认安装命令的 profile 是 `desktop`，运行 `dsh plugin --profile desktop list --depth 0`，然后完整重启桌面应用。
-- bootstrap 不生效：检查 profile overlay 是否把 `bootstrap` 设成了 `false`，并新建会话测试。
-- 同名技能行为不同：插件 provider 使用 rank `550`，且 desktop 的 scoped 本地 provider 会覆盖全局同名项；项目或用户技能可能有意遮蔽 vendored 版本。
-- provider 警告：运行 `npm test` 和 `npm run verify:upstream`；缺失、非法 frontmatter 和重复技能名都会产生带路径的诊断。
-- 上游校验失败：不要手改 `skills/`；用显式 ref 重新运行同步脚本。
-
-## 实现结构
-
-- `lib/index.js`：Cordis 插件、懒加载 skill provider、bootstrap 与工具映射。
-- `lib/frontmatter.js`：零依赖 frontmatter 解析和校验。
-- `skills/`：固定、校验过的 Superpowers payload。
-- `scripts/sync-upstream.mjs`：维护者显式同步与事务式回滚。
-- `scripts/verify-upstream.mjs`：只读校验。
-- `cordis.patch.yml`：稳定 row `dsh-superpowers`。
-- `test/`：provider、bootstrap、打包与独立加载测试。
-
-## 许可证
-
-插件代码使用 [MIT License](./LICENSE)。Vendored Superpowers 内容保留其上游许可证，见 [LICENSE.superpowers](./LICENSE.superpowers)；来源为 `https://github.com/obra/superpowers` 的上述固定 tag/commit。
+The DSH integration code is MIT licensed; see [LICENSE](./LICENSE). Vendored Superpowers content retains its upstream MIT license in [LICENSE.superpowers](./LICENSE.superpowers). See [NOTICE.md](./NOTICE.md) and [upstream-lock.json](./upstream-lock.json) for provenance and exact hashes.

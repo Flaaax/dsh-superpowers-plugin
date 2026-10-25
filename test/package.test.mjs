@@ -48,7 +48,8 @@ test('npm dry-run contains every runtime, skill, reference, script, and license 
   const report = JSON.parse(output)[0];
   const packed = new Set(report.files.map((entry) => entry.path));
   const expected = [
-    'package.json', 'cordis.patch.yml', 'README.md', 'LICENSE', 'LICENSE.superpowers', 'upstream-lock.json',
+    'package.json', 'cordis.patch.yml', 'README.md', 'README.zh-CN.md', 'NOTICE.md',
+    'LICENSE', 'LICENSE.superpowers', 'upstream-lock.json',
     ...(await walkFiles(join(root, 'lib'))).map((file) => portablePath(root, file)),
     ...(await walkFiles(join(root, 'skills'))).map((file) => portablePath(root, file)),
     ...(await walkFiles(join(root, 'scripts'))).map((file) => portablePath(root, file)),

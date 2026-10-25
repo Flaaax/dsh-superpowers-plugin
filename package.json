@@ -2,6 +2,14 @@
   "name": "dsh-superpowers-plugin",
   "version": "0.1.0",
   "description": "DeepSeek Harness native bundle for the Superpowers skill collection",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Flaaax/dsh-superpowers-plugin.git"
+  },
+  "homepage": "https://github.com/Flaaax/dsh-superpowers-plugin#readme",
+  "bugs": {
+    "url": "https://github.com/Flaaax/dsh-superpowers-plugin/issues"
+  },
   "type": "module",
   "main": "./lib/index.js",
   "exports": {
@@ -16,6 +24,8 @@
     "cordis.patch.yml",
     "upstream-lock.json",
     "README.md",
+    "README.zh-CN.md",
+    "NOTICE.md",
     "LICENSE",
     "LICENSE.superpowers"
   ],
