@@ -23,6 +23,8 @@ test('provider lists and lazily loads every vendored skill', async () => {
   assert.equal(candidates.length, 15);
   assert.deepEqual(candidates.map((item) => item.name), [...candidates.map((item) => item.name)].sort());
   assert.equal(candidates.some((item) => Object.hasOwn(item, 'content')), false);
+  const bootstrap = candidates.find((item) => item.name === 'using-superpowers');
+  assert.deepEqual(bootstrap.invocation, { modelInvocable: false, userInvocable: true });
   for (const candidate of candidates) {
     const loaded = await provider.get(candidate);
     assert.equal(loaded.name, candidate.name);

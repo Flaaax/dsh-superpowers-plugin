@@ -20,6 +20,7 @@ test('bootstrap strips frontmatter, wraps the skill once, and includes DSH mappi
   const text = buildBootstrap();
   assert.match(text, /^<EXTREMELY_IMPORTANT>/);
   assert.match(text, /<SUBAGENT-STOP>/);
+  assert.match(text, /NEVER call the skill tool for using-superpowers/);
   assert.doesNotMatch(text, /^---/m);
   assert.equal(text.split('## DeepSeek Harness tool mapping').length - 1, 1);
   assert.match(text, /skill\("brainstorming"\)/);
