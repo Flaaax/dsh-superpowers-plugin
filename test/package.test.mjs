@@ -9,16 +9,19 @@ import { verifyUpstream } from '../scripts/verify-upstream.mjs';
 import { walkFiles, portablePath } from '../scripts/upstream-utils.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const onWindows = process.platform === 'win32';
-
 function command(command, args, options = {}) {
   const result = spawnSync(command, args, {
     cwd: options.cwd ?? root,
     encoding: 'utf8',
-    shell: options.shell ?? (onWindows && command === 'npm'),
+    shell: options.shell ?? false,
   });
   assert.equal(result.status, 0, `${command} failed:\n${result.stdout}\n${result.stderr}`);
   return result.stdout;
+}
+
+function npm(args) {
+  assert.ok(process.env.npm_execpath, 'npm_execpath is required when the suite is run through npm test');
+  return command(process.execPath, [process.env.npm_execpath, ...args]);
 }
 
 test('manifest, ESM entry, and bundle patch are valid', async () => {
@@ -44,7 +47,7 @@ test('vendored payload matches the pinned upstream lock', async () => {
 });
 
 test('npm dry-run contains every runtime, skill, reference, script, and license file', async () => {
-  const output = command('npm', ['pack', '--json', '--dry-run']);
+  const output = npm(['pack', '--json', '--dry-run']);
   const report = JSON.parse(output)[0];
   const packed = new Set(report.files.map((entry) => entry.path));
   const expected = [
@@ -63,7 +66,7 @@ test('npm dry-run contains every runtime, skill, reference, script, and license 
 test('actual tarball unpacks and imports independently', async () => {
   const temporary = await mkdtemp(join(tmpdir(), 'dsh-superpowers-pack-'));
   try {
-    const output = command('npm', ['pack', '--json', '--pack-destination', temporary]);
+    const output = npm(['pack', '--json', '--pack-destination', temporary]);
     const report = JSON.parse(output)[0];
     const tarball = join(temporary, report.filename);
     command('tar', ['-xf', tarball, '-C', temporary], { shell: false });

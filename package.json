@@ -1,6 +1,6 @@
 {
   "name": "dsh-superpowers-plugin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "DeepSeek Harness native bundle for the Superpowers skill collection",
   "repository": {
     "type": "git",

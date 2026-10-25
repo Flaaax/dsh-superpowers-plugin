@@ -19,7 +19,7 @@ Only the bootstrap is injected into every model request. All other skills are lo
 Install the pinned GitHub release into the desktop profile:
 
 ```powershell
-dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.1.0"
+dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.1.1"
 ```
 
 Fully quit and restart the DeepSeek Harness desktop application, then start a new conversation.

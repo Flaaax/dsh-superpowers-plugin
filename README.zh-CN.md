@@ -15,7 +15,7 @@
 安装固定的 GitHub 正式版本：
 
 ```powershell
-dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.1.0"
+dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.1.1"
 ```
 
 本地开发目录安装：
