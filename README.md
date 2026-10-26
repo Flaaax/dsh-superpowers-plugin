@@ -9,8 +9,9 @@ A lightweight native [DeepSeek Harness](https://github.com/deepseek-ai/DeepSeek-
 - Vendored Superpowers `v7.0.1` at commit `2ce8aa15d05bd57213e6f746f953aafb7ded7a8b`
 - Native lazy-loaded `ctx.skills` provider
 - Automatic `using-superpowers` bootstrap through `ctx.systemPrompt`
+- Native desktop configuration form for all four plugin options
 - DSH-specific tool mapping with bare skill names such as `skill("brainstorming")`
-- No OpenCode dependency, install hook, build step, or runtime dependency
+- No OpenCode dependency, install hook, or build step; the only direct runtime dependency is DSH's native `@deepseek-ai/schemastery`
 
 Only the bootstrap is injected into every model request. All other skills are loaded on demand through DSH's native `skill` tool.
 
@@ -19,7 +20,7 @@ Only the bootstrap is injected into every model request. All other skills are lo
 Install the pinned GitHub release into the desktop profile:
 
 ```powershell
-dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.1.1"
+dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.2.0"
 ```
 
 Fully quit and restart the DeepSeek Harness desktop application, then start a new conversation.
@@ -61,7 +62,7 @@ The model should load `systematic-debugging`.
 Install the new explicit tag, then restart the desktop app:
 
 ```powershell
-dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.1.1"
+dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.2.0"
 ```
 
 Do not install an unpinned `main` branch if reproducible behavior matters.
@@ -77,6 +78,10 @@ dsh plugin --profile desktop remove dsh-superpowers-plugin
 Restart the desktop app afterward. Other plugins and user skills are not changed.
 
 ## Configuration
+
+In the desktop app, open this plugin's configuration entry on the plugin management page. DSH renders the exported native schema as a form for `skills`, `bootstrap`, `toolMapping`, and `order`; no YAML editing is required for normal changes. Start a new conversation after saving. If the running desktop generation does not refresh immediately, fully quit and restart it.
+
+The equivalent defaults are:
 
 Defaults:
 

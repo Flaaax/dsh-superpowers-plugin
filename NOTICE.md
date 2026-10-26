@@ -7,6 +7,17 @@ The integration code in this repository is licensed under the MIT License in
 
 本仓库的 DSH 集成代码依据根目录 `LICENSE` 中的 MIT License 发布。
 
+## Runtime schema dependency / 运行时 Schema 依赖
+
+The desktop configuration form uses `@deepseek-ai/schemastery` 3.18.5. Its
+transitive runtime dependencies are `@deepseek-ai/cosmokit` 1.8.6 and
+`@standard-schema/spec` 1.1.0. All three packages are MIT licensed and are
+installed by the package manager rather than vendored into this repository.
+
+桌面配置表单使用 `@deepseek-ai/schemastery` 3.18.5；其传递依赖为
+`@deepseek-ai/cosmokit` 1.8.6 与 `@standard-schema/spec` 1.1.0。三者均采用
+MIT License，由包管理器安装，并未复制进本仓库。
+
 ## Vendored Superpowers content / 随包分发的 Superpowers 内容
 
 This distribution vendors the `skills/` directory from:

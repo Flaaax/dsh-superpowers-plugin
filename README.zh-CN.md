@@ -8,14 +8,15 @@
 - 已验证 DSH：`0.2.1-rc.3`
 - Superpowers：`v7.0.1`，commit `2ce8aa15d05bd57213e6f746f953aafb7ded7a8b`
 - 其余技能按需通过原生 `skill` 工具加载；不会把所有技能正文塞进每轮上下文
-- 无 OpenCode 依赖、无 `postinstall`、运行时仅使用 Node.js 内置模块
+- 桌面端可通过原生配置表单修改全部四个插件选项
+- 无 OpenCode 依赖、无 `postinstall`、无需构建；唯一直接运行时依赖是 DSH 原生的 `@deepseek-ai/schemastery`
 
 ## 安装
 
 安装固定的 GitHub 正式版本：
 
 ```powershell
-dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.1.1"
+dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.2.0"
 ```
 
 本地开发目录安装：
@@ -47,6 +48,8 @@ npm pack --dry-run
 bundle row 的稳定 id 是 `dsh-superpowers`。可在桌面应用的插件页确认该插件已启用；对于允许 CLI dump 的非桌面 profile，也可用 `dsh --profile <name> --dump-config` 搜索这个 id。当前 DSH 将真实 `desktop` profile 交由 Electron 独占管理，因此 CLI 对它执行 `--dump-config` 会明确拒绝；这不代表插件未安装。
 
 ## 配置
+
+在桌面客户端的插件管理页打开本插件的配置入口，即可看到由 DSH 原生 Schema 自动生成的表单。`skills`、`bootstrap`、`toolMapping` 和 `order` 四项都能直接编辑，日常配置不再需要手改 YAML。保存后请新建会话；如果当前桌面进程没有立即刷新，请完整退出并重新启动。
 
 默认配置如下：
 
@@ -81,7 +84,7 @@ bundle row 的稳定 id 是 `dsh-superpowers`。可在桌面应用的插件页�
 更新正式版本时安装新的明确 tag，再重启桌面应用：
 
 ```powershell
-dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.1.1"
+dsh plugin --profile desktop add "https://github.com/Flaaax/dsh-superpowers-plugin.git#v0.2.0"
 ```
 
 本地开发目录更新后可重新安装本地链接：

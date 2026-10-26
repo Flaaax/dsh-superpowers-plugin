@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Superpowers">
+  <defs>
+    <linearGradient id="a" x1="10" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#a)" d="M32 3 56 12v17c0 15-9.7 26.6-24 32C17.7 55.6 8 44 8 29V12L32 3Z"/>
+  <path fill="#fff" d="M35.9 12 19 35.2h10.2L27.5 52 45 27.8H34.6L35.9 12Z"/>
+</svg>

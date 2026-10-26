@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { apply, buildBootstrap, TOOL_MAPPING } from '../lib/index.js';
+import { apply, buildBootstrap, Config, TOOL_MAPPING } from '../lib/index.js';
 
 function context() {
   const providers = [];
@@ -47,5 +47,23 @@ test('bootstrap, tool mapping, and order configuration switches work', () => {
   apply(noMapping.ctx, { toolMapping: false, order: 75 });
   assert.equal(noMapping.sections[0].order, 75);
   assert.doesNotMatch(noMapping.sections[0].text, /DeepSeek Harness tool mapping/);
-  assert.throws(() => apply(context().ctx, { skills: 'yes', bootstrap: false }), /config\.skills must be a boolean/);
+  assert.throws(() => apply(context().ctx, { skills: 'yes', bootstrap: false }), /boolean/);
+});
+
+test('desktop configuration schema exposes defaults and bilingual field help', () => {
+  assert.deepEqual(Config({}), {
+    skills: true,
+    bootstrap: true,
+    toolMapping: true,
+    order: 50,
+  });
+  const serialized = JSON.parse(JSON.stringify(Config));
+  const root = serialized.refs[serialized.uid];
+  assert.match(root.meta.description.en, /skill catalog/);
+  assert.match(root.meta.description.zh, /技能目录/);
+  for (const key of ['skills', 'bootstrap', 'toolMapping', 'order']) {
+    const field = serialized.refs[root.dict[key]];
+    assert.equal(typeof field.meta.description.en, 'string');
+    assert.equal(typeof field.meta.description.zh, 'string');
+  }
 });

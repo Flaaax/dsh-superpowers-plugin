@@ -19,9 +19,9 @@ function command(command, args, options = {}) {
   return result.stdout;
 }
 
-function npm(args) {
+function npm(args, options = {}) {
   assert.ok(process.env.npm_execpath, 'npm_execpath is required when the suite is run through npm test');
-  return command(process.execPath, [process.env.npm_execpath, ...args]);
+  return command(process.execPath, [process.env.npm_execpath, ...args], options);
 }
 
 test('manifest, ESM entry, and bundle patch are valid', async () => {
@@ -32,6 +32,8 @@ test('manifest, ESM entry, and bundle patch are valid', async () => {
   const plugin = await import(`${pathToFileURL(join(root, pkg.main)).href}?test=${Date.now()}`);
   assert.equal(plugin.name, 'dsh-superpowers');
   assert.equal(typeof plugin.apply, 'function');
+  assert.equal(typeof plugin.Config, 'function');
+  assert.equal(pkg.dependencies['@deepseek-ai/schemastery'], '3.18.5');
 
   const patch = await readFile(join(root, 'cordis.patch.yml'), 'utf8');
   assert.deepEqual([...patch.matchAll(/^\s+- id:\s*(.+)$/gm)].map((match) => match[1]), ['dsh-superpowers']);
@@ -52,8 +54,9 @@ test('npm dry-run contains every runtime, skill, reference, script, and license 
   const packed = new Set(report.files.map((entry) => entry.path));
   const expected = [
     'package.json', 'cordis.patch.yml', 'README.md', 'README.zh-CN.md', 'NOTICE.md',
-    'LICENSE', 'LICENSE.superpowers', 'upstream-lock.json',
+    'LICENSE', 'LICENSE.superpowers', 'upstream-lock.json', 'icon.svg',
     ...(await walkFiles(join(root, 'lib'))).map((file) => portablePath(root, file)),
+    ...(await walkFiles(join(root, 'locale'))).map((file) => portablePath(root, file)),
     ...(await walkFiles(join(root, 'skills'))).map((file) => portablePath(root, file)),
     ...(await walkFiles(join(root, 'scripts'))).map((file) => portablePath(root, file)),
   ];
@@ -71,6 +74,7 @@ test('actual tarball unpacks and imports independently', async () => {
     const tarball = join(temporary, report.filename);
     command('tar', ['-xf', tarball, '-C', temporary], { shell: false });
     const extracted = join(temporary, 'package');
+    npm(['install', '--ignore-scripts', '--no-package-lock'], { cwd: extracted });
     const plugin = await import(`${pathToFileURL(join(extracted, 'lib', 'index.js')).href}?packed=${Date.now()}`);
     assert.equal(plugin.name, 'dsh-superpowers');
     assert.equal((await plugin.createSkillProvider().list()).length, 15);
