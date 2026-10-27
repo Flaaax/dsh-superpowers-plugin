@@ -49,7 +49,7 @@ bundle row 的稳定 id 是 `dsh-superpowers`。可在桌面应用的插件页�
 
 ## 配置
 
-在桌面客户端的插件管理页打开本插件的配置入口，即可看到由 DSH 原生 Schema 自动生成的表单。`skills`、`bootstrap`、`toolMapping` 和 `order` 四项都能直接编辑，日常配置不再需要手改 YAML。保存后请新建会话；如果当前桌面进程没有立即刷新，请完整退出并重新启动。
+在桌面客户端的**「插件」页**（不是「组件」页）打开本插件的详情页，即可看到配置卡。配置卡由客户端插件（`lib/client.js`）通过 `plugins.bundle.config` slot 注册，读取 DSH 原生 settings namespace 并渲染成表单。`skills`、`bootstrap`、`toolMapping` 和 `order` 四项都能直接编辑，日常配置不再需要手改 YAML。保存后请新建会话；如果当前桌面进程没有立即刷新，请完整退出并重新启动。
 
 默认配置如下：
 
@@ -122,6 +122,7 @@ dsh plugin --profile desktop remove dsh-superpowers-plugin
 ## 实现结构
 
 - `lib/index.js`：Cordis 插件、懒加载 skill provider、bootstrap 与工具映射。
+- `lib/client.js`：桌面客户端插件，在「插件」页注册四项配置的 settings 卡。
 - `lib/frontmatter.js`：零依赖 frontmatter 解析和校验。
 - `skills/`：固定、校验过的 Superpowers payload。
 - `scripts/sync-upstream.mjs`：维护者显式同步与事务式回滚。

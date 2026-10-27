@@ -79,7 +79,7 @@ Restart the desktop app afterward. Other plugins and user skills are not changed
 
 ## Configuration
 
-In the desktop app, open this plugin's configuration entry on the plugin management page. DSH renders the exported native schema as a form for `skills`, `bootstrap`, `toolMapping`, and `order`; no YAML editing is required for normal changes. Start a new conversation after saving. If the running desktop generation does not refresh immediately, fully quit and restart it.
+In the desktop app, open this plugin's detail page on the **Plugins** page (not the Components page). A settings card registered by the client plugin (`lib/client.js`) through the `plugins.bundle.config` slot renders `skills`, `bootstrap`, `toolMapping`, and `order`; no YAML editing is required for normal changes. Start a new conversation after saving. If the running desktop generation does not refresh immediately, fully quit and restart it.
 
 The equivalent defaults are:
 

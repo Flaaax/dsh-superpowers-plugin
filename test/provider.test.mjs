@@ -39,8 +39,19 @@ test('apply registers a provider with DSH and respects the skills switch', () =>
   const sections = [];
   const ctx = {
     logger: { warn() {} },
-    skills: { registerProvider(factory) { providers.push(factory({ signal: new AbortController().signal, invalidate() {} })); } },
-    systemPrompt: { section(value) { sections.push(value); } },
+    skills: { registerProvider(factory) { providers.push(factory({ signal: new AbortController().signal, invalidate() {} })); return () => {}; } },
+    systemPrompt: { section(value) { sections.push(value); return () => {}; } },
+    effect(fn) {
+      const iterator = fn();
+      const disposers = [];
+      let step = iterator.next();
+      while (!step.done) {
+        if (typeof step.value === 'function') disposers.push(step.value);
+        step = iterator.next();
+      }
+      return () => disposers.forEach((dispose) => dispose());
+    },
+    on() {},
   };
   apply(ctx, { bootstrap: false });
   assert.equal(providers.length, 1);

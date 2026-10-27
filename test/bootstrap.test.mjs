@@ -10,8 +10,19 @@ function context() {
     sections,
     ctx: {
       logger: { warn() {} },
-      skills: { registerProvider(factory) { providers.push(factory({ signal: new AbortController().signal, invalidate() {} })); } },
-      systemPrompt: { section(section) { sections.push(section); } },
+      skills: { registerProvider(factory) { providers.push(factory({ signal: new AbortController().signal, invalidate() {} })); return () => {}; } },
+      systemPrompt: { section(section) { sections.push(section); return () => {}; } },
+      effect(fn) {
+        const iterator = fn();
+        const disposers = [];
+        let step = iterator.next();
+        while (!step.done) {
+          if (typeof step.value === 'function') disposers.push(step.value);
+          step = iterator.next();
+        }
+        return () => disposers.forEach((dispose) => dispose());
+      },
+      on() {},
     },
   };
 }
@@ -47,16 +58,15 @@ test('bootstrap, tool mapping, and order configuration switches work', () => {
   apply(noMapping.ctx, { toolMapping: false, order: 75 });
   assert.equal(noMapping.sections[0].order, 75);
   assert.doesNotMatch(noMapping.sections[0].text, /DeepSeek Harness tool mapping/);
-  assert.throws(() => apply(context().ctx, { skills: 'yes', bootstrap: false }), /boolean/);
 });
 
 test('desktop configuration schema exposes defaults and bilingual field help', () => {
-  assert.deepEqual(Config({}), {
-    skills: true,
-    bootstrap: true,
-    toolMapping: true,
-    order: 50,
-  });
+  const parsed = Config({});
+  assert.equal(parsed.skills.get(), true);
+  assert.equal(parsed.bootstrap.get(), true);
+  assert.equal(parsed.toolMapping.get(), true);
+  assert.equal(parsed.order.get(), 50);
+  assert.throws(() => Config({ skills: 'yes' }), /boolean/);
   const serialized = JSON.parse(JSON.stringify(Config));
   const root = serialized.refs[serialized.uid];
   assert.match(root.meta.description.en, /skill catalog/);
